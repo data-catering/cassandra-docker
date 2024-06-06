@@ -29,7 +29,7 @@ echo "Building dse base image..."
 cd base
 docker buildx build \
   --platform "$platforms" \
-  -t "dse-base:latest" .
+  -t "dse-base:latest" --load .
 if [ $? -ne 0 ]; then
   echo "Failed to build base image!"
   exit 1
