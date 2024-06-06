@@ -2,7 +2,7 @@
 #   Please review the included LICENSE file for more information.
 #
 
-FROM registry-1.docker.io/library/dse-base as dse-server-base
+FROM dse-base as dse-server-base
 
 ENV DSE_HOME /opt/dse
 ENV DSE_AGENT_HOME /opt/agent

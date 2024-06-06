@@ -38,6 +38,7 @@ cd ..
 
 echo "Building and pushing dse-server docker image..."
 cd build/server/$version
+docker buildx use default
 docker buildx build \
   --platform "$platforms" \
   --build-arg "VERSION=$version" \
