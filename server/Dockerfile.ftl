@@ -1,7 +1,8 @@
 # Copyright DataStax, Inc, 2017
 #   Please review the included LICENSE file for more information.
 #
-FROM dse-base as dse-server-base
+ARG VERSION=[=version]
+FROM datacatering/dse-base:${VERSION} as dse-server-base
 
 ENV DSE_HOME /opt/dse
 ENV DSE_AGENT_HOME /opt/agent

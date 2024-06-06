@@ -24,11 +24,11 @@ docker run --privileged --rm tonistiigi/binfmt --install all
 docker buildx create --use --name builder
 docker buildx inspect --bootstrap builder
 
-echo "Building dse base image..."
+echo "Building and pushing dse base image..."
 cd base
 docker buildx build \
   --platform "$platforms" \
-  -t "dse-base:latest" --load .
+  -t "datacatering/dse-base:$version" --push .
 if [ $? -ne 0 ]; then
   echo "Failed to build base image!"
   exit 1
@@ -37,7 +37,6 @@ cd ..
 
 echo "Building and pushing dse-server docker image..."
 cd build/server/$version
-docker buildx use default
 docker buildx build \
   --platform "$platforms" \
   --build-arg "VERSION=$version" \
