@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-#platforms="linux/amd64,linux/arm64"
-platforms="linux/arm64"
+platforms="linux/amd64,linux/arm64"
 version=${VERSION:-6.8.48}
 agentVersion=${AGENT_VERSION:-6.7.4}
 downloadUrlPrefix="https://downloads.datastax.com"
@@ -25,11 +24,11 @@ docker run --privileged --rm tonistiigi/binfmt --install all
 docker buildx create --use --name builder
 docker buildx inspect --bootstrap builder
 
-echo "Building and pushing dse base image..."
+echo "Building dse base image..."
 cd base
 docker buildx build \
   --platform "$platforms" \
-  -t "datacatering/dse-base:$version" --push .
+  -t "dse-base:latest" --load .
 if [ $? -ne 0 ]; then
   echo "Failed to build base image!"
   exit 1
@@ -38,6 +37,7 @@ cd ..
 
 echo "Building and pushing dse-server docker image..."
 cd build/server/$version
+docker buildx use default
 docker buildx build \
   --platform "$platforms" \
   --build-arg "VERSION=$version" \
