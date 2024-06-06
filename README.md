@@ -1,50 +1,67 @@
 # Contents
+
 * [Quick Reference](#quick-reference)
 * [Prerequisites](#prerequisites)
 * [Creating a DataStax Enterprise Container](#creating-a-datastax-enterprise-container)
-   * [Container examples](#examples)
-   * [Managing the configuration](#managing-the-configuration)
-   * [Volumes and Data](#volumes-and-data)
+  * [Container examples](#examples)
+  * [Managing the configuration](#managing-the-configuration)
+  * [Volumes and Data](#volumes-and-data)
 * [Running DSE Commands and Viewing Logs](#running-dse-commands-and-viewing-logs)
 * [Creating an OpsCenter Container](#creating-an-opscenter-container)
 * [Creating a Studio Container](#creating-a-studio-container)
 * [Building](#building)
 * [Licensing](#license)
 
-The DataStax base image now uses OpenJDK.  Previously we were building with Oracle JDK.  Starting with the below image versions and moving forward, prebuilt images on [Docker Hub](https://hub.docker.com/u/datastax/) will include OpenJDK.  If you would like to use OpenJDK with a version that was built with Oracle JDK we have built new images including OpenJDK with a tag of `version-openjdk8`
+The DataStax base image now uses OpenJDK. Previously we were building with Oracle JDK. Starting with the below image
+versions and moving forward, prebuilt images on [Docker Hub](https://hub.docker.com/u/datastax/) will include OpenJDK.
+If you would like to use OpenJDK with a version that was built with Oracle JDK we have built new images including
+OpenJDK with a tag of `version-openjdk8`
 
 * DSE `6.0.2` and `5.1.11`
 * OpsCenter `6.5.1` and `6.1.7`
 * Studio `6.0.1`
 
-# Quick Reference 
-### Where to get help:
-[DataStax Academy](https://academy.datastax.com/?utm_campaign=Docker_2019&utm_medium=web&utm_source=docker&utm_term=-&utm_content=Web_Academy_Downloads), [DataStax Community](https://community.datastax.com/), [Github](https://github.com/datastax/docker-images)
+# Quick Reference
 
-Full documentation and advanced tutorials are located within [DataStax Academy](https://academy.datastax.com/?utm_campaign=Docker_2019&utm_medium=web&utm_source=docker&utm_term=-&utm_content=Web_Academy_Downloads). Docker Compose examples for deploying DataStax Enterprise with [Opscenter](https://hub.docker.com/r/datastax/dse-opscenter/) and [Studio](https://hub.docker.com/r/datastax/dse-studio/) are available on our [Github](https://github.com/datastax/docker-images/tree/master/example_compose_yamls) page 
+### Where to get help:
+
+[DataStax Academy](https://academy.datastax.com/?utm_campaign=Docker_2019&utm_medium=web&utm_source=docker&utm_term=-&utm_content=Web_Academy_Downloads)
+, [DataStax Community](https://community.datastax.com/), [Github](https://github.com/datastax/docker-images)
+
+Full documentation and advanced tutorials are located
+within [DataStax Academy](https://academy.datastax.com/?utm_campaign=Docker_2019&utm_medium=web&utm_source=docker&utm_term=-&utm_content=Web_Academy_Downloads)
+. Docker Compose examples for deploying DataStax Enterprise
+with [Opscenter](https://hub.docker.com/r/datastax/dse-opscenter/)
+and [Studio](https://hub.docker.com/r/datastax/dse-studio/) are available on
+our [Github](https://github.com/datastax/docker-images/tree/master/example_compose_yamls) page
 
 ### Featured Tutorial - [DataStax Enterprise 6 Guided Tour](https://academy.datastax.com/resources/guided-tour-dse-6-using-docker)
 
 ### Where to file issues:
+
 Ask questions and get help at the [DataStax Community](https://community.datastax.com/) forum.
 
-### Maintained by 
-[DataStax](https://www.datastax.com/) 
+### Maintained by
 
-
+[DataStax](https://www.datastax.com/)
 
 # What is DataStax Enterprise
 
-Built on the best distribution of Apache Cassandra™, DataStax Enterprise is the always-on database designed to allow you to effortlessly build and scale your apps, integrating graph, search, analytics, administration, developer tooling, and monitoring into a single unified platform. We power your apps' real-time moments so you can create instant insights and powerful customer experiences.
-
+Built on the best distribution of Apache Cassandra™, DataStax Enterprise is the always-on database designed to allow you
+to effortlessly build and scale your apps, integrating graph, search, analytics, administration, developer tooling, and
+monitoring into a single unified platform. We power your apps' real-time moments so you can create instant insights and
+powerful customer experiences.
 
 # Prerequisites
 
-* Basic understanding of Docker images and containers. 
+* Basic understanding of Docker images and containers.
 
-* Docker installed on your local system, see [Docker Installation Instructions](https://docs.docker.com/engine/installation/). 
+* Docker installed on your local system,
+  see [Docker Installation Instructions](https://docs.docker.com/engine/installation/).
 
-* When using Docker for Mac or Docker for Windows, the default resources allocated to the linux VM running docker are 2GB RAM and 2 CPU's. Make sure to adjust these resources to meet the resource requirements for the containers you will be running. More information can be found here on adjusting the resources allocated to docker.
+* When using Docker for Mac or Docker for Windows, the default resources allocated to the linux VM running docker are
+  2GB RAM and 2 CPU's. Make sure to adjust these resources to meet the resource requirements for the containers you will
+  be running. More information can be found here on adjusting the resources allocated to docker.
 
 [Docker for mac](https://docs.docker.com/docker-for-mac/#advanced)
 
@@ -52,24 +69,24 @@ Built on the best distribution of Apache Cassandra™, DataStax Enterprise is th
 
 # Creating a DataStax Enterprise container
 
-Use the options described in this section to create DataStax Enterprise server containers. 
+Use the options described in this section to create DataStax Enterprise server containers.
 
+By default, the DSE server image runs in Cassandra-only mode.. To run with advanced DSE functionality, add the option
+that enables any combination of search, analytics, and graph to the end of the docker run command.
 
-By default, the DSE server image runs in Cassandra-only mode.. To run with advanced DSE  functionality, add the option that enables any combination of search, analytics, and graph to the end of the docker run command.
+| Option | Description                     |
+|--------|---------------------------------|
+| -s     | Enables and starts DSE Search.  |
+| -k     | Enables and starts Analytics.   |
+| -g     | Enables and starts a DSE Graph. |
 
-Option | Description
-------------- | -------------
--s | Enables and starts DSE Search.
--k | Enables and starts Analytics.
--g | Enables and starts a DSE Graph.
-
-Combine startup options to run more than one feature. For more examples, see  [Starting DataStax Enterprise as a stand-alone process ](http://docs.datastax.com/en/dse/6.0/dse-admin/datastax_enterprise/operations/startStop/startDseStandalone.html).
+Combine startup options to run more than one feature. For more examples,
+see  [Starting DataStax Enterprise as a stand-alone process ](http://docs.datastax.com/en/dse/6.0/dse-admin/datastax_enterprise/operations/startStop/startDseStandalone.html)
+.
 
 ## Examples
 
-
 ### Create a DSE database container
-
 
 ```
 docker run -e DS_LICENSE=accept --name my-dse -d datastax/dse-server
@@ -101,81 +118,110 @@ docker run -e DS_LICENSE=accept --name my-dse -d datastax/dse-server -s -k -g
 
 ## Managing the configuration
 
-Manage the DSE configuration using one of the following options:  
+Manage the DSE configuration using one of the following options:
 
-* [DSE configuration volume](https://docs.datastax.com/en/docker/doc/docker/docker60/dockerDSEVolumes.html) For configuration management, we’re providing a simple mechanism to let you provide custom configuration file(s) without customizing the containers or over using host volumes. You can add any of the [approved config files](https://github.com/datastax/docker-images/tree/master/config-templates) to a single mounted host volume and we’ll handle the hard work of mapping them within the container.
+* [DSE configuration volume](https://docs.datastax.com/en/docker/doc/docker/docker60/dockerDSEVolumes.html) For
+  configuration management, we’re providing a simple mechanism to let you provide custom configuration file(s) without
+  customizing the containers or over using host volumes. You can add any of
+  the [approved config files](https://github.com/datastax/docker-images/tree/master/config-templates) to a single
+  mounted host volume and we’ll handle the hard work of mapping them within the container.
 
 
-* [DSE environment variables](#using-environment-variables) that change the configuration at runtime. 
-    * Environment variables will trump any other settings meaning that if you set a custom snitch in cassandra.yaml and then a different one with an environment variable, the environment variable setting will be used.
-    * DSE uses the default values defined for environment variables unless they are explicitly set at run time or unless overridden with the DSE_AUTO_CONF_OFF environment variable.
+* [DSE environment variables](#using-environment-variables) that change the configuration at runtime.
+  * Environment variables will trump any other settings meaning that if you set a custom snitch in cassandra.yaml and
+    then a different one with an environment variable, the environment variable setting will be used.
+  * DSE uses the default values defined for environment variables unless they are explicitly set at run time or unless
+    overridden with the DSE_AUTO_CONF_OFF environment variable.
 
 
 * Docker file/directory volume mounts
 
 * Docker overlay file system
 
-* DSE uses the default values defined for the environment variables unless explicitly set at run time.  
+* DSE uses the default values defined for the environment variables unless explicitly set at run time.
 
-* **NOTE** When using memory resource contraints, you must must set JVM heap size using the environment variable `JVM_EXTRA_OPTS` or custom `cassandra-env.sh` or DSE running inside the container due to java not honoring resource limits set for the container. Java utilizes the resources (memory and CPU) of the host. Otherwise DSE will set the heap to 1/4 of the physical ram of the docker host.
+* **NOTE** When using memory resource constraints, you must must set JVM heap size using the environment
+  variable `JVM_EXTRA_OPTS` or custom `cassandra-env.sh` or DSE running inside the container due to java not honoring
+  resource limits set for the container. Java utilizes the resources (memory and CPU) of the host. Otherwise DSE will
+  set the heap to 1/4 of the physical ram of the docker host.
 
 ### Using the DSE conf volume
 
 To use this feature:
 
 1. Create a directory on your local host.
-2. Download and customize the configuration files you want to use from the [config-templates](https://github.com/datastax/docker-images/tree/master/config-templates) page.  
+2. Download and customize the configuration files you want to use from
+   the [config-templates](https://github.com/datastax/docker-images/tree/master/config-templates) page.
 3. Add the custom configuration files to the host directory you created.
-    * The file name must match a corresponding configuration file in the image and include all the required values, for example cassandra.yaml, dse.yaml. 
+  * The file name must match a corresponding configuration file in the image and include all the required values, for
+    example cassandra.yaml, dse.yaml.
 4. Mount the exposed Volume /config to the local directory.
 5. Start the container. For example to start a database node:
 
 ```
 docker run -e DS_LICENSE=accept --name my-dse  -v /dse/config:/config -d datastax/dse-server
 ```
-**Note** When you make changes to or add config files to the `/config` volume, you will need to restart your container with `docker restart container_name` for DSE to pickup the changes. Restarting the container will restart DSE.
+
+**Note** When you make changes to or add config files to the `/config` volume, you will need to restart your container
+with `docker restart container_name` for DSE to pickup the changes. Restarting the container will restart DSE.
 
 ### Using environment variables
 
+Configure the DSE image by setting environment variables when the container is created using the docker run command `-e`
+flag.
 
-Configure the DSE image by setting environment variables when the container is created using the docker run command `-e` flag.
-
-Variable | Setting        | Description                
------------- | ----------------- | -------------------- 
-`DS_LICENSE` | accept | **Required**. Set to accept to acknowledge that you agree with the terms of the DataStax license. To show the license, set the variable `DS_LICENSE` to the value `accept`. *The image only starts if the variable set to accept.*
-`LISTEN_ADDRESS` | *IP_address* | The IP address to listen for connections from other nodes. Defaults to the container's IP address.
-`BROADCAST_ADDRESS` | *IP_address* | The IP address to advertise to other nodes. Defaults to the same value as the `LISTEN_ADDRESS`.
-`NATIVE_TRANSPORT_ADDRESS` |*IP_address* | The IP address to listen for client/driver connections. Default: `0.0.0.0`.
-`NATIVE_TRANSPORT_BROADCAST_ADDRESS` | *IP_address* | The IP address to advertise to clients/drivers. Defaults to the same value as the `BROADCAST_ADDRESS`.
-`SEEDS` | *IP_address* | The comma-delimited list of seed nodes for the cluster. Defaults to this node's `BROADCAST_ADDRESS`. 
-`START_RPC` | `true` \| `false` | Whether or not to start the Thrift RPC server. Will leave the default in the `cassandra.yaml` file if not set.
-`CLUSTER_NAME` | *string* | The name of the cluster. Default: `Test Cluster`.
-`NUM_TOKENS`|*int*|The number of tokens randomly assigned to the node. Default: not set .
-`DC` | *string* | Datacenter name. Default: `Cassandra`.
-`RACK` | *string* | Rack name. Default: `rack1`.
-`OPSCENTER_IP` | *IP_address* \| *string* | Address of OpsCenter instance to use for DSE management; it can be specified via linking the OpsCenter container using opscenter as the name.
-`JVM_EXTRA_OPTS` | *string* |  Allows setting custom Heap using -Xmx and -Xms.
-`LANG` | *string* |  Allows setting custom Locale
-`SNITCH` | *string* |  This variable sets the snitch implementation this node will use. It will set the endpoint_snitch option of cassandra.yaml. Default: GossipingPropertyFileSnitch
-`DSE_AUTO_CONF_OFF` | *string* | Sometimes users want to set all variables in the config files. For these situations one must prevent default environment variables from overriding those values. This setting lets you provide a comma-separated list of filenames (options are  cassandra.yaml and cassandra-rackdc.properties) that will not accept the Environmental variables or can be set to 'all' to disable default environment variables being set within either file.
-
-
+| Variable                             | Setting                 | Description                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+|--------------------------------------|-------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `DS_LICENSE`                         | accept                  | **
+Required**. Set to accept to acknowledge that you agree with the terms of the DataStax license. To show the license, set the variable `DS_LICENSE` to the value `accept`. *
+The image only starts if the variable set to
+accept.*                                                                                                                                                                                                              |
+| `LISTEN_ADDRESS`                     | *
+IP_address*            | The IP address to listen for connections from other nodes. Defaults to the container's IP address.                                                                                                                                                                                                                                                                                                                                              |
+| `BROADCAST_ADDRESS`                  | *
+IP_address*            | The IP address to advertise to other nodes. Defaults to the same value as the `LISTEN_ADDRESS`.                                                                                                                                                                                                                                                                                                                                                 |
+| `NATIVE_TRANSPORT_ADDRESS`           | *
+IP_address*            | The IP address to listen for client/driver connections. Default: `0.0.0.0`.                                                                                                                                                                                                                                                                                                                                                                     |
+| `NATIVE_TRANSPORT_BROADCAST_ADDRESS` | *
+IP_address*            | The IP address to advertise to clients/drivers. Defaults to the same value as the `BROADCAST_ADDRESS`.                                                                                                                                                                                                                                                                                                                                          |
+| `SEEDS`                              | *
+IP_address*            | The comma-delimited list of seed nodes for the cluster. Defaults to this node's `BROADCAST_ADDRESS`.                                                                                                                                                                                                                                                                                                                                            |
+| `START_RPC`                          | `true`\`false`          | Whether or not to start the Thrift RPC server. Will leave the default in the `cassandra.yaml` file if not set.                                                                                                                                                                                                                                                                                                                                  |
+| `CLUSTER_NAME`                       | *
+string*                | The name of the cluster. Default: `Test Cluster`.                                                                                                                                                                                                                                                                                                                                                                                               |
+| `NUM_TOKENS`                         | *
+int*                   | The number of tokens randomly assigned to the node. Default: not set .                                                                                                                                                                                                                                                                                                                                                                          |
+| `DC`                                 | *
+string*                | Datacenter name. Default: `Cassandra`.                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `RACK`                               | *
+string*                | Rack name. Default: `rack1`.                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `OPSCENTER_IP`                       | *IP_address* \ *
+string* | Address of OpsCenter instance to use for DSE management; it can be specified via linking the OpsCenter container using opscenter as the name.                                                                                                                                                                                                                                                                                                   |
+| `JVM_EXTRA_OPTS`                     | *
+string*                | Allows setting custom Heap using -Xmx and -Xms.                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `LANG`                               | *
+string*                | Allows setting custom Locale                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `SNITCH`                             | *
+string*                | This variable sets the snitch implementation this node will use. It will set the endpoint_snitch option of cassandra.yaml. Default: GossipingPropertyFileSnitch                                                                                                                                                                                                                                                                                 |
+| `DSE_AUTO_CONF_OFF`                  | *
+string*                | Sometimes users want to set all variables in the config files. For these situations one must prevent default environment variables from overriding those values. This setting lets you provide a comma-separated list of filenames (options are  cassandra.yaml and cassandra-rackdc.properties) that will not accept the Environmental variables or can be set to 'all' to disable default environment variables being set within either file. |
 
 ## Volumes and data
 
-To persist data, pre-create directories on the local host and map the directory to the corresponding volume using the docker run `-v` flag. 
+To persist data, pre-create directories on the local host and map the directory to the corresponding volume using the
+docker run `-v` flag.
 
 **NOTE:** If the volumes are not mounted from the local host, all data is lost when the container is removed.
 
-DSE images expose the following volumes.  
+DSE images expose the following volumes.
 
 * For DataStax Enterprise Transactional, Search, Graph, and Analytics workloads:
-   * `/var/lib/cassandra`: Data from Cassandra
-   * `/var/lib/spark`: Data from DSE Analytics w/ Spark
-   * `/var/lib/dsefs`: Data from DSEFS
-   * `/var/log/cassandra`: Logs from Cassandra
-   * `/var/log/spark`: Logs from Spark
-   * `/config`: Directory to add custom config files for the container to pickup.
+  * `/var/lib/cassandra`: Data from Cassandra
+  * `/var/lib/spark`: Data from DSE Analytics w/ Spark
+  * `/var/lib/dsefs`: Data from DSEFS
+  * `/var/log/cassandra`: Logs from Cassandra
+  * `/var/log/spark`: Logs from Spark
+  * `/config`: Directory to add custom config files for the container to pickup.
 
 * For OpsCenter: `/var/lib/opscenter`
 
@@ -185,13 +231,13 @@ DSE images expose the following volumes.
 docker run -v <local_directory>:<container_volume>
 ```
 
-See Docker docs > [Use volumes](https://docs.docker.com/engine/tutorials/dockervolumes/#mount-a-host-directory-as-a-data-volume) for more information.
-
+See Docker
+docs > [Use volumes](https://docs.docker.com/engine/tutorials/dockervolumes/#mount-a-host-directory-as-a-data-volume)
+for more information.
 
 # Running DSE commands and viewing logs
 
-
-Use the `docker exec -it <container_name>` command to specific commands. 
+Use the `docker exec -it <container_name>` command to specific commands.
 
 ```
 docker exec -it my-dse nodetool status
@@ -199,7 +245,8 @@ docker exec -it my-dse nodetool status
 
 ## Opening an interactive bash shell
 
-If the container is running in the background (using the `-d`), use the following command to open an interactive bash shell to run DSE commands. 
+If the container is running in the background (using the `-d`), use the following command to open an interactive bash
+shell to run DSE commands.
 
 ```
 docker exec -it <container_name> bash
@@ -209,12 +256,11 @@ To exit the shell without stopping the container type exit.
 
 ## Opening an interactive CQL shell (cqlsh)
 
-Use the following command to open cqlsh. 
+Use the following command to open cqlsh.
 
 ```
 docker exec -it <container_name> cqlsh
 ```
-
 
 ## Viewing logs
 
@@ -226,89 +272,97 @@ docker logs my-dse
 
 ## Creating an Opscenter Container
 
-Follow these steps to create an Opscenter container and a connected DataStax Enterprise server container on the same Docker host. 
+Follow these steps to create an Opscenter container and a connected DataStax Enterprise server container on the same
+Docker host.
 
 To create and connect the containers:
 
 1. First create an OpsCenter container.
-
-    * `docker run -e DS_LICENSE=accept -d -p 8888:8888 --name my-opscenter datastax/dse-opscenter`
-
-    * See [OpsCenter Docker run options](#OpsCenter-Docker-run-options) for additional options that persist data or manage configuration.
-
-2. Create a [DataStax Enterprise (DSE) server](https://hub.docker.com/r/datastax/dse-server/) container that is linked to the OpsCenter container. 
-
-    * `docker run -e DS_LICENSE=accept --link my-opscenter:opscenter --name my-dse -d datastax/dse-server`
-
-
+  * `docker run -e DS_LICENSE=accept -d -p 8888:8888 --name my-opscenter datastax/dse-opscenter`
+  * See [OpsCenter Docker run options](#OpsCenter-Docker-run-options) for additional options that persist data or manage
+    configuration.
+2. Create a [DataStax Enterprise (DSE) server](https://hub.docker.com/r/datastax/dse-server/) container that is linked
+   to the OpsCenter container.
+  * `docker run -e DS_LICENSE=accept --link my-opscenter:opscenter --name my-dse -d datastax/dse-server`
 3. Get the DSE container IP address:
-
-    * On the host running the DSE container run
-
-    * `docker inspect my-dse | grep '"IPAddress":' `
-
-
+  * On the host running the DSE container run
+  * `docker inspect my-dse | grep '"IPAddress":' `
 4. Open a browser and go to `http://DOCKER_HOST_IP:8888`.
-5. Click `Manage existing cluster`. 
+5. Click `Manage existing cluster`.
 6. In `host name`, enter the DSE IP address.
-7. Click `Install agents manually`. Note that the agent is already installed on the DSE image; no installation is required.
+7. Click `Install agents manually`. Note that the agent is already installed on the DSE image; no installation is
+   required.
 
-OpsCenter is ready to use with DSE. See the [OpsCenter User Guide](http://docs.datastax.com/en/opscenter/6.5/) for detailed usage and configuration instructions.
+OpsCenter is ready to use with DSE. See the [OpsCenter User Guide](http://docs.datastax.com/en/opscenter/6.5/) for
+detailed usage and configuration instructions.
 
 ## Creating a Studio Container
-Follow these steps to create a DataStax Studio container that is connected to a [DataStax Enterprise (DSE) server](https://hub.docker.com/r/datastax/dse-server) container on the same Docker host.
+
+Follow these steps to create a DataStax Studio container that is connected to
+a [DataStax Enterprise (DSE) server](https://hub.docker.com/r/datastax/dse-server) container on the same Docker host.
 
 To create and connect the containers:
 
 1. Create a DataStax Studio container:
-
-```
-docker run -e DS_LICENSE=accept --link my-dse --name my-studio -p 9091:9091 -d datastax/dse-studio
-```
+    ```shell
+    docker run -e DS_LICENSE=accept --link my-dse --name my-studio -p 9091:9091 -d datastax/dse-studio
+    ```
 2. Open a browser and go to `http://DOCKER_HOST_IP:9091`
+3. Create the new connection using my-dse as the hostname, see DataStax Studio User
+   Guide > [Creating a new connection](http://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/studio/stdToc.html)
+   for further instructions.
 
-3. Create the new connection using my-dse as the hostname, see DataStax Studio User Guide > [Creating a new connection](http://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/studio/stdToc.html) for further instructions.
-
-Studio is ready to use with DSE. See [DataStax Studio User Guide](http://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/studio/stdAbout.html) for detailed usage and configuration instructions.
+Studio is ready to use with DSE.
+See [DataStax Studio User Guide](http://docs.datastax.com/en/dse/5.1/dse-dev/datastax_enterprise/studio/stdAbout.html)
+for detailed usage and configuration instructions.
 
 # Building
 
 The code in this repository builds the DSE, Opscenter, DDAC and Studio Docker images.
-To get started, clone this repo and modify for your requirements. 
+To get started, clone this repo and modify for your requirements.
 
 This repo uses Gradle to build the images.
 
 Requirements:
 
 * JDK8
-* [Docker](https://docker.com) engine locally or point `DOCKER_HOST` env variable to the Docker engine you would like to build against (version 17.05+)
+* [Docker](https://docker.com) engine locally or point `DOCKER_HOST` env variable to the Docker engine you would like to
+  build against (version 17.05+)
 
-By default, [Gradle](https://gradle.org) will download DataStax tarballs from [DataStax Academy](https://downloads.datastax.com).
+By default, [Gradle](https://gradle.org) will download DataStax tarballs
+from [DataStax Academy](https://downloads.datastax.com).
 
-DataStax uses a common base image for all products. If you would like to customize the OS, install additional packages etc, 
-you would modify the `base/Dockerfile`. 
+DataStax uses a common base image for all products. If you would like to customize the OS, install additional packages
+etc,
+you would modify the `base/Dockerfile`.
 
-In order to support multiple product versions, but without duplicating files, Docker build contexts are generated out of source folders
-that might contain [FreeMarker](https://freemarker.apache.org/docs/index.html) templates (the files with `.ftl` extensions).
+In order to support multiple product versions, but without duplicating files, Docker build contexts are generated out of
+source folders
+that might contain [FreeMarker](https://freemarker.apache.org/docs/index.html) templates (the files with `.ftl`
+extensions).
 The following conventions are important to remember:
 
-* Docker build context for each product is generated out of folder having the product name (e.g. `server`, `opscenter`, or `studio`)
+* Docker build context for each product is generated out of folder having the product name (e.g. `server`, `opscenter`,
+  or `studio`)
 * The files NOT ending with `.ftl` extension are copied to the build context AS IS
 * The files ending with `.ftl` are processed as FreeMarker templates
-   * Template directives are written using [angle bracket syntax](https://freemarker.apache.org/docs/dgui_template_directives.html)
-   * Square bracket syntax is used for [interpolations](https://freemarker.apache.org/docs/dgui_misc_alternativesyntax.html#dgui_misc_alternativesyntax_interpolation)  
-   * Resulting content is copied to the build context under the filename with `.ftl` extension stripped out 
-     (e.g. `Dockerfile.ftl` becomes `Dockerfile`)
-* Each FreeMarker template has access to `version` variable 
-   * The following properties are available
-     * `version.major` returns product version major number
-     * `version.minor` returns product version minor number
-     * `version.bugfix` returns product version bugfix number
-   * The following functions are available
-     * `version.lowerThan('x.y.z')` return `true` if `version` is semantically lower than `x.y.z`
-     * `version.greaterEqualThan('x.y.z')` return `true` if `version` is semantically greater or equal than `x.y.z`
+  * Template directives are written
+    using [angle bracket syntax](https://freemarker.apache.org/docs/dgui_template_directives.html)
+  * Square bracket syntax is used
+    for [interpolations](https://freemarker.apache.org/docs/dgui_misc_alternativesyntax.html#dgui_misc_alternativesyntax_interpolation)
+  * Resulting content is copied to the build context under the filename with `.ftl` extension stripped out
+    (e.g. `Dockerfile.ftl` becomes `Dockerfile`)
+* Each FreeMarker template has access to `version` variable
+  * The following properties are available
+    * `version.major` returns product version major number
+    * `version.minor` returns product version minor number
+    * `version.bugfix` returns product version bugfix number
+  * The following functions are available
+    * `version.lowerThan('x.y.z')` return `true` if `version` is semantically lower than `x.y.z`
+    * `version.greaterEqualThan('x.y.z')` return `true` if `version` is semantically greater or equal than `x.y.z`
 
-If you would like to customize DSE, Opscenter, Studio or DDAC you would need to modify templates in their corresponding folder. 
+If you would like to customize DSE, Opscenter, Studio or DDAC you would need to modify templates in their corresponding
+folder.
 
 Building a product image for a given version requires invoking a Gradle task that follows the pattern:
 
@@ -316,7 +370,7 @@ Building a product image for a given version requires invoking a Gradle task tha
 ./gradlew build<Product><Version>Image
 
 ```
- 
+
 For example: if you want to build DSE 5.1.10, you need to say
 
 ```
@@ -331,7 +385,8 @@ You can build many images at once:
 ./gradlew buildServer5.1.0Image buildServer6.7.0Image buildOpscenter6.7.0Image
 ```
 
-Publishing an image to a registry (default: [Docker Hub](https://hub.docker.com)) requires invoking a Gradle task that follows the pattern:
+Publishing an image to a registry (default: [Docker Hub](https://hub.docker.com)) requires invoking a Gradle task that
+follows the pattern:
 
 ```
 ./gradlew push<Product><Version>Image
@@ -347,29 +402,35 @@ registryUsername=<USERNAME>
 registryPassword=<PASSWORD>
 
 ```
- 
-Run `./gradlew tasks` to get the list of all available tasks.
 
+Run `./gradlew tasks` to get the list of all available tasks.
 
 # Next Steps
 
-Head over to [DataStax Academy](https://academy.datastax.com/?utm_campaign=Docker_2019&utm_medium=web&utm_source=docker&utm_term=-&utm_content=Web_Academy_Downloads) for advanced documentation including
+Head over
+to [DataStax Academy](https://academy.datastax.com/?utm_campaign=Docker_2019&utm_medium=web&utm_source=docker&utm_term=-&utm_content=Web_Academy_Downloads)
+for advanced documentation including
 
 * Apache Cassandra™/Datastax configuration management
 * Using environment variables
 * Persisting data
 * Exposing public ports
 * Volumes and data directories
-* Docker Compose examples to spin up connected clusters of DataStax Enterprise, Studio, and Opscenter (also on [github](https://github.com/datastax/docker-images/tree/master/example_compose_yamls))
+* Docker Compose examples to spin up connected clusters of DataStax Enterprise, Studio, and Opscenter (also
+  on [github](https://github.com/datastax/docker-images/tree/master/example_compose_yamls))
 * Step-by-step tutorials and examples
 * How to build applications using Apache Cassandra™/ DataStax
 
 # Known Limitations
+
 * CFS is not supported.
 * LCM is not supported.
-* Changing any file not included in the list of approved configuration files will require an additional host volume or customization of the image. An example is SSL key management.
-* The JVM heap size must be set for DataStax Enterprise (DSE) running inside the container using the JVM_EXTRA_OPTS variable or custom cassandra-env.sh. If not set, Java does not honor resource limits set for the container, and will peer through the container to use resources (memory and CPU) of the host. See the JVM_EXTRA_OPTS variable in Using environment variables for more information.
-
+* Changing any file not included in the list of approved configuration files will require an additional host volume or
+  customization of the image. An example is SSL key management.
+* The JVM heap size must be set for DataStax Enterprise (DSE) running inside the container using the JVM_EXTRA_OPTS
+  variable or custom cassandra-env.sh. If not set, Java does not honor resource limits set for the container, and will
+  peer through the container to use resources (memory and CPU) of the host. See the JVM_EXTRA_OPTS variable in Using
+  environment variables for more information.
 
 # License
 

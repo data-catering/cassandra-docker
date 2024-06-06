@@ -9,7 +9,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'org.freemarker:freemarker:2.3.28'
+        classpath 'org.freemarker:freemarker:2.3.33'
         classpath 'commons-io:commons-io:2.6'
         classpath 'com.google.guava:guava:28.0-jre'
 
@@ -20,13 +20,16 @@ plugins {
     id 'base'
     id 'com.bmuschko.docker-remote-api' version '4.10.0'
     id "nebula.override" version "3.0.2"
-    id "de.undercouch.download" version "3.4.3"
+    id "de.undercouch.download" version "5.6.0"
 }
 
-import de.undercouch.gradle.tasks.download.Download
-import com.bmuschko.gradle.docker.tasks.image.*
+
 import com.bmuschko.gradle.docker.tasks.AbstractDockerRemoteApiTask
 import com.google.common.base.CaseFormat
+import de.undercouch.gradle.tasks.download.Download
+import freemarker.template.Configuration
+import freemarker.template.TemplateExceptionHandler
+import org.apache.commons.io.input.ProxyReader
 
 defaultPropertyValue 'agentVersion', '6.7.4'
 defaultPropertyValue 'downloadUrlPrefix', 'https://downloads.datastax.com'
@@ -36,40 +39,21 @@ defaultPropertyValue 'downloadOpscenterUrlTemplate', "${downloadUrlPrefix}/enter
 defaultPropertyValue 'downloadStudioUrlTemplate', "${downloadUrlPrefix}/datastax-studio/datastax-studio-\${VERSION}.tar.gz"
 defaultPropertyValue 'downloadDdacUrlTemplate', "${downloadUrlPrefix}/ddac/ddac-\${VERSION}-bin.tar.gz"
 
-defaultPropertyValue 'imagePrefix', (project.hasProperty('dockerRegistry') ? ( "$dockerRegistry/" - 'http://' - 'https://') : "") + 'datastax'
+defaultPropertyValue 'imagePrefix', (project.hasProperty('dockerRegistry') ? ("$dockerRegistry/" - 'http://' - 'https://') : "") + 'datastax'
 
 docker {
     registryCredentials {
         if (project.hasProperty('dockerRegistry')) {
             url = project.dockerRegistry
         }
-        if (project.hasProperty('registryUsername'))
-        {
+        if (project.hasProperty('registryUsername')) {
             username = project.registryUsername
         }
 
-        if (project.hasProperty('registryPassword'))
-        {
+        if (project.hasProperty('registryPassword')) {
             password = project.registryPassword
         }
     }
-}
-
-def dockerImages(Object...contextDirs) {
-    contextDirs.collect { file(it) }.each { contextDir ->
-        def imageName = "dse-${contextDir.name}"
-        tasks.create("build${CaseFormat.LOWER_HYPHEN.to(CaseFormat.UPPER_CAMEL, contextDir.name)}Image", DockerBuildImage) {
-            group = 'Build'
-            ext.imageName = imageName
-            description = "Build $imageName image"
-            inputDir = contextDir
-            tags.add("$imageName:latest")
-        }
-    }
-}
-
-def taskForDockerImage(imageName) {
-    tasks.withType(DockerBuildImage).find { it.imageName == imageName }
 }
 
 def renderDockerContextTask(templateDir, version) {
@@ -85,8 +69,6 @@ def renderDockerContextTask(templateDir, version) {
     }
 
 }
-
-dockerImages 'base'
 
 tasks.addRule("Pattern: (build|push)<Image><Version>Image: build/push Docker image out of templates in <Image> folder and for given <Version>") { taskName ->
 
@@ -120,47 +102,19 @@ tasks.addRule("Pattern: (build|push)<Image><Version>Image: build/push Docker ima
         }
         def downloadTask = tasks.create("download${templateName.capitalize()}$version", Download) {
             src url
-            onlyIfModified  true
+            onlyIfModified true
             dest renderTask.destinationDir
         }
 
-        tasks.create(taskName, DockerBuildImage) {
-            ext.imageName = imageName
-            dependsOn renderTask, downloadTask, taskForDockerImage('dse-base')
-            inputDir = renderTask.destinationDir
-            tags.add("$imagePrefix/$imageName:$version")
-            def extraVersionProperty = "${taskName}ExtraVersions"
-            if (project.hasProperty(extraVersionProperty)) {
-                project.getProperty(extraVersionProperty).split(',').collect { it.trim() }.each { v ->
-                    tags.add("$imagePrefix/$imageName:$v")
-                }
-            }
-            buildArgs.putAll([DOWNLOAD_URL : url, TARBALL: url.split('/').last()])
-
-            if (new File(url).exists()) {
-                dependsOn(tasks.create("copy${templateName.capitalize()}ToBuildCtx", Copy) {
-                    from url
-                    into renderTask.destinationDir
-                })
-            }
-
+        if (new File(url).exists()) {
+            dependsOn(tasks.create("copy${templateName.capitalize()}ToBuildCtx", Copy) {
+                from url
+                into renderTask.destinationDir
+            })
         }
-    } else {
-        if (taskName.startsWith('push') && taskName.endsWith('Image')) {
-            def buildImageTask = tasks.getByName("build${taskName.substring(4)}")
-            tasks.create(taskName, DockerPushImage) {
-                dependsOn buildImageTask
-                buildImageTask.tags.getOrNull().asList().eachWithIndex { t, i ->
-                    if (i == 0) {
-                        imageName = t
-                    } else {
-                        finalizedBy(tasks.create("${taskName}As${t.split(':').toList().last()}", DockerPushImage) {
-                            dependsOn buildImageTask
-                            imageName = t
-                        })
-                    }
-                }
-            }
+
+        tasks.create(taskName) {
+            dependsOn renderTask, downloadTask
         }
     }
 }
@@ -178,16 +132,11 @@ tasks.withType(AbstractDockerRemoteApiTask) {
 
 tasks.matching { it.name.startsWith('buildServer') }.all {
     def url = renderTemplate(project.ext.get("downloadAgentUrlTemplate"), [VERSION: agentVersion])
-    buildArgs.putAll([DSE_AGENT_DOWNLOAD_URL : url, DSE_AGENT_TARBALL: url.split('/').last()])
 }
 
 tasks.matching { it.name.startsWith('downloadServer') }.all {
     def url = renderTemplate(project.ext.get("downloadAgentUrlTemplate"), [VERSION: agentVersion])
-    src([ src, url])
-}
-
-buildBaseImage {
-    pull = true
+    src([src, url])
 }
 
 tasks.withType(Download) {
@@ -213,13 +162,10 @@ void defaultPropertyValue(name, value) {
     }
 }
 
-
-import freemarker.template.*
-import org.apache.commons.io.input.ProxyReader
-
 class RenderDir extends Sync {
 
     private File sourceDir
+    @Internal
     def freeMarkerCfg
 
     @Input
@@ -239,8 +185,8 @@ class RenderDir extends Sync {
             if (sourceName.endsWith('.ftl')) {
                 name = sourceName - '.ftl'
                 filter(["freeMarkerCfg": freeMarkerCfg,
-                        "fileName": fd.relativeSourcePath.pathString,
-                        "vars": vars], FreeMarkerReader)
+                        "fileName"     : fd.relativeSourcePath.pathString,
+                        "vars"         : vars], FreeMarkerReader)
             }
         }
     }
@@ -253,6 +199,7 @@ class RenderDir extends Sync {
 }
 
 class FreeMarkerReader extends ProxyReader {
+//    def in
     def freeMarkerCfg
     def fileName
     def rendered
@@ -262,6 +209,7 @@ class FreeMarkerReader extends ProxyReader {
         super(r)
     }
 
+    @Override
     void beforeRead(int i) {
         if (!rendered) {
             def template = freeMarkerCfg.getTemplate(fileName)
@@ -298,7 +246,7 @@ class Version implements Serializable {
         [major: m[0][1], minor: m[0][2], bugfix: m[0][3], customSuffix: m[0][4]]
     }
 
-    String toString() { "$major.$minor.$bugfix$customSuffix"}
+    String toString() { "$major.$minor.$bugfix$customSuffix" }
 
     int getNumericValue() {
         major * 100000 + minor * 100 + bugfix
