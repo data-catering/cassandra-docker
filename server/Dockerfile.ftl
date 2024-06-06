@@ -36,13 +36,13 @@ COPY /* /
 
 RUN set -x \
 # Download DSE tarball if needed
-    && if test ! -e /${TARBALL}; then wget -nv --show-progress --progress=bar:force:noscroll -O /${TARBALL} ${DOWNLOAD_URL} ; fi \
+    && if test ! -e /${TARBALL}; then wget -nv -O /${TARBALL} ${DOWNLOAD_URL} ; fi \
 # Unpack tarball
     && tar -C "$DSE_HOME" --strip-components=1 -xzf /${TARBALL} \
     && rm /${TARBALL} \
     && chown -R dse:dse ${DSE_HOME} \
 # Download Agent tarball if needed
-    && if test ! -e /${DSE_AGENT_TARBALL}; then wget -nv --show-progress --progress=bar:force:noscroll -O /${DSE_AGENT_TARBALL} ${DSE_AGENT_DOWNLOAD_URL} ; fi \
+    && if test ! -e /${DSE_AGENT_TARBALL}; then wget -nv -O /${DSE_AGENT_TARBALL} ${DSE_AGENT_DOWNLOAD_URL} ; fi \
     && mkdir -p "$DSE_AGENT_HOME" \
     && tar -C "$DSE_AGENT_HOME" --strip-components=1 -xzf /${DSE_AGENT_TARBALL} \
     && rm /${DSE_AGENT_TARBALL}

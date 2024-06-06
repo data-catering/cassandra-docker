@@ -1,3 +1,11 @@
+# Cassandra Docker
+
+Allowing for multi-platform images for dse-server via GitHub actions.
+
+```shell
+./docker-build.sh
+```
+
 # Contents
 
 * [Quick Reference](#quick-reference)
